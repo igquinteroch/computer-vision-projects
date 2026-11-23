@@ -23,11 +23,16 @@ class EncoderCNN(nn.Module):
 class DecoderRNN(nn.Module):
     def __init__(self, embed_size, hidden_size, vocab_size, num_layers=1):
         super(DecoderRNN, self).__init__()
-        # TODO: Complete this function
-
+        self.embed = nn.Embedding(vocab_size, embed_size)
+        self.lstm = nn.LSTM(embed_size, hidden_size, num_layers, batch_first=True)
+        self.linear = nn.Linear(hidden_size, vocab_size)
+    
     def forward(self, features, captions):
-        embeddings = self.embed(captions[:, :-1])  # Exclude the <end> token
-        # TODO: Complete this function
+        embeddings = self.embed(captions[:,:-1])
+        embeddings = torch.cat((features.unsqueeze(1), embeddings), 1)
+        #packed = pack_padded_sequence(embeddings, lengths, batch_first=True) 
+        hiddens, _ = self.lstm(embeddings)
+        outputs = self.linear(hiddens)
         return outputs
 
     def sample(self, inputs, states=None, max_len=20):

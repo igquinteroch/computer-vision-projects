@@ -8,3 +8,5 @@ image_captioning/models/*.pkl
 .ipynb_checkpoints/
 __pycache__/
 .DS_Store
+.venv/
+image_captioning/*.html
