@@ -2,7 +2,10 @@
 
 A ResNet-18 encoder and an LSTM decoder, trained on MS COCO 2014, that generate a one-sentence description of an image.
 
-![Training loss](assets/loss_curve.png)
+<p align="center">
+  <img src="assets/example_good_2.png" alt="An elephant walking along a dirt road" width="480"><br>
+  <em>"a large elephant standing in a field next to a tree."</em>
+</p>
 
 ## Overview
 
@@ -15,6 +18,7 @@ The model follows the *Show and Tell* approach (Vinyals et al., 2015). A convolu
 | Training | Cross-entropy with teacher forcing, Adam (lr 1e-3), 64 images × 4-step gradient accumulation (effective batch 256), 3 epochs |
 | Decoding | Greedy, up to 20 tokens |
 | Final loss | ≈ 2.0 (200-step moving average, perplexity ≈ 7.5) |
+| Hardware | Apple M3 Pro (MPS), ~3 h for 3 epochs |
 
 ## Architecture
 
@@ -43,6 +47,14 @@ The reasoning behind each choice is in the *Design decisions* section of [`02_tr
 ## Results
 
 Training loss drops quickly in the first few hundred steps, as the decoder learns the basic structure of a caption, and then keeps falling slowly. The 200-step moving average is ≈2.35 at the end of epoch 1, ≈2.14 after epoch 2 and ≈2.02 at the end of training. The step-to-step noise comes from batches having different caption lengths.
+
+![Training loss](assets/loss_curve.png)
+
+### Random samples (not cherry-picked)
+
+Eight test2014 images drawn with a fixed seed (`random.Random(42)`) and captioned with greedy decoding. The grid is generated in [`03_inference`](notebooks/03_inference.ipynb).
+
+![Captions for 8 random test images](assets/random_samples.png)
 
 ### Captions that work
 
@@ -109,7 +121,7 @@ curl -L -o models/encoder-3.pkl https://github.com/igquinteroch/computer-vision-
 curl -L -o models/decoder-3.pkl https://github.com/igquinteroch/computer-vision-projects/releases/download/image-captioning-v1.0/decoder-3.pkl
 ```
 
-**3. COCO 2014.** Download the [annotations](http://images.cocodataset.org/annotations/annotations_trainval2014.zip), the [test image info](http://images.cocodataset.org/annotations/image_info_test2014.zip), and the [train](http://images.cocodataset.org/zips/train2014.zip) and [test](http://images.cocodataset.org/zips/test2014.zip) images, and arrange them like this:
+**3. COCO 2014.** Download the [annotations](http://images.cocodataset.org/annotations/annotations_trainval2014.zip), the [test image info](http://images.cocodataset.org/annotations/image_info_test2014.zip), and the [train](http://images.cocodataset.org/zips/train2014.zip) and [test](http://images.cocodataset.org/zips/test2014.zip) images (~19 GB together), and arrange them like this:
 
 ```
 data/cocoapi/
@@ -125,14 +137,14 @@ data/cocoapi/
 export COCO_ROOT=/path/to/coco
 ```
 
-For inference only, the test images and `image_info_test2014.json` are enough.
+For inference only, the test images (~6 GB) and `image_info_test2014.json` are enough; you can skip train2014.
 
 **4. Notebooks.** Run them from the `notebooks/` directory:
 
 | Notebook | What it does | Needs |
 |---|---|---|
 | `01_data_exploration` | Captions, tokenization, vocabulary threshold, length-bucketed batches | train2014 + captions |
-| `02_training` | Trains the model; overwrites `training_log.txt` and `models/` | train2014 + captions, a GPU |
+| `02_training` | Trains the model; overwrites `training_log.txt` and `models/` | train2014 + captions, a GPU (CUDA or Apple Silicon) |
 | `03_inference` | Loads the weights and captions test images | test2014, weights |
 
 To regenerate the loss curve, run `python scripts/plot_loss.py`.
