@@ -10,3 +10,4 @@ __pycache__/
 .DS_Store
 .venv/
 image_captioning/*.html
+image_captioning/dist/
