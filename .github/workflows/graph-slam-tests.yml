@@ -1,0 +1,23 @@
+name: graph-slam tests
+
+on:
+  push:
+    paths:
+      - "graph_slam/**"
+      - ".github/workflows/graph-slam-tests.yml"
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: graph_slam
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install dependencies
+        run: |
+          uv venv --python 3.11 .venv
+          uv pip install -p .venv numpy==2.4.6 pytest==9.0.3
+      - name: Run tests
+        run: .venv/bin/pytest -v
