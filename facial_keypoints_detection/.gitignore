@@ -1,10 +1,9 @@
-# Trained models (large binaries — regenerate by running notebook 2)
-saved_models/*.pt
-saved_models/*.pth
+# Trained weights and release staging (published as GitHub release assets, see README)
+models/*.pt
+dist/
 
-# Dataset (downloaded at runtime from Udacity S3 bucket in notebook 1)
+# Dataset (downloaded by data_load.download_data into data/)
 data/
-/workspace/
 *.zip
 
 # Python

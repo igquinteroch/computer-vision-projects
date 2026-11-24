@@ -11,3 +11,4 @@ __pycache__/
 .venv/
 image_captioning/*.html
 image_captioning/dist/
+CLAUDE.md
